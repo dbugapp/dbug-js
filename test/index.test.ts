@@ -7,7 +7,7 @@ import {
   afterEach,
   type MockInstance,
 } from "vitest";
-import { stringify, dbug } from "../src";
+import dbug, { stringify } from "../src";
 
 describe("stringify", () => {
   it("should stringify primitives", () => {
