@@ -2,8 +2,8 @@
 
 <!-- automd:badges color=yellow -->
 
-[![npm version](https://img.shields.io/npm/v/dbug-js?color=yellow)](https://npmjs.com/package/dbug-js)
-[![npm downloads](https://img.shields.io/npm/dm/dbug-js?color=yellow)](https://npm.chart.dev/dbug-js)
+[![npm version](https://img.shields.io/npm/v/@dbugapp/dbug-js?color=yellow)](https://npmjs.com/package/@dbugapp/dbug-js)
+[![npm downloads](https://img.shields.io/npm/dm/@dbugapp/dbug-js?color=yellow)](https://npm.chart.dev/@dbugapp/dbug-js)
 
 <!-- /automd -->
 
