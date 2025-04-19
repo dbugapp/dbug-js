@@ -54,11 +54,11 @@ import {} from "https://esm.sh/pkg";
 
 <!-- automd:contributors license=MIT -->
 
-Published under the [MIT](https://github.com/dbugapp/dbug-j/blob/main/LICENSE) license.
-Made by [community](https://github.com/dbugapp/dbug-j/graphs/contributors) 💛
+Published under the [MIT](https://github.com/dbugapp/dbug-js/blob/main/LICENSE) license.
+Made by [community](https://github.com/dbugapp/dbug-js/graphs/contributors) 💛
 <br><br>
-<a href="https://github.com/dbugapp/dbug-j/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=dbugapp/dbug-j" />
+<a href="https://github.com/dbugapp/dbug-js/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=dbugapp/dbug-js" />
 </a>
 
 <!-- /automd -->
