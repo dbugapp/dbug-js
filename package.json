@@ -1,5 +1,5 @@
 {
-  "name": "@dbugapp/dbug-js",
+  "name": "dbug-js",
   "version": "0.0.1",
   "description": "dbug desktop javascript agent",
   "repository": "dbugapp/dbug-js",
