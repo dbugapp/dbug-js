@@ -1,4 +1,4 @@
-function stringify(payload: unknown): string {
+export function stringify(payload: unknown): string {
   try {
     if (!payload) throw new Error("[dbug] no payload to serialize");
     return JSON.stringify(
