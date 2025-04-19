@@ -1,5 +1,13 @@
-import { describe, expect, it } from "vitest";
-import { stringify } from "../src";
+import {
+  describe,
+  expect,
+  it,
+  vi,
+  beforeEach,
+  afterEach,
+  type MockInstance,
+} from "vitest";
+import { stringify, dbug } from "../src";
 
 describe("stringify", () => {
   it("should stringify primitives", () => {
@@ -91,14 +99,19 @@ describe("stringify", () => {
     expect(stringify(obj)).toBe(expectedObj);
   });
 
-  it("should handle circular references by throwing error", () => {
+  it("should handle circular references gracefully", () => {
     const obj: any = { a: 1 };
     obj.circular = obj;
-    expect(JSON.parse(stringify(obj))).toEqual({
-      error: "Serialization failed",
-      reason:
-        "TypeError: Converting circular structure to JSON\n    --> starting at object with constructor 'Object'\n    --- property 'circular' closes the circle",
-    });
+    const expectedJson = JSON.stringify(
+      {
+        a: 1,
+        circular: "[circular]",
+      },
+      undefined,
+      2,
+    );
+    // We expect the stringified output, not JSON.parse
+    expect(stringify(obj)).toBe(expectedJson);
   });
 
   it("should handle BigInt by throwing error", () => {
@@ -114,5 +127,92 @@ describe("stringify", () => {
         error_,
       );
     }
+  });
+});
+
+describe("dbug", () => {
+  let fetchSpy: MockInstance;
+  let consoleErrorSpy: MockInstance;
+  let abortSpy: MockInstance;
+
+  beforeEach(() => {
+    // Mock global fetch
+    fetchSpy = vi.spyOn(globalThis, "fetch");
+    // Spy on console.error
+    consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    // Mock AbortSignal.timeout
+    abortSpy = vi
+      .spyOn(AbortSignal, "timeout")
+      .mockReturnValue(undefined as any); // Use undefined
+  });
+
+  afterEach(() => {
+    // Restore mocks
+    vi.restoreAllMocks();
+  });
+
+  it("should call fetch with correct parameters on success", async () => {
+    const payload = { message: "hello world" };
+    fetchSpy.mockResolvedValueOnce(new Response(undefined, { status: 200 })); // Use undefined for body
+
+    await dbug(payload);
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledWith("http://127.0.0.1:53821/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: stringify(payload),
+      signal: undefined, // We mocked timeout to return undefined
+    });
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(abortSpy).toHaveBeenCalledWith(500);
+  });
+
+  it("should log connection error message if fetch fails with TypeError", async () => {
+    const payload = { data: 123 };
+    const fetchError = new TypeError("Failed to fetch");
+    fetchSpy.mockRejectedValueOnce(fetchError);
+
+    await dbug(payload);
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `[dbug] Failed to connect or timed out. Is the dbug desktop app running? Download: http://github.com/dbugapp\nOriginal error: ${fetchError}`,
+    );
+  });
+
+  it("should log connection error message if fetch fails with AbortError", async () => {
+    const payload = { status: "timeout" };
+    const abortError = new DOMException(
+      "The operation was aborted.",
+      "AbortError",
+    );
+    fetchSpy.mockRejectedValueOnce(abortError);
+
+    await dbug(payload);
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `[dbug] Failed to connect or timed out. Is the dbug desktop app running? Download: http://github.com/dbugapp\nOriginal error: ${abortError}`,
+    );
+  });
+
+  it("should log unexpected error message for other fetch errors", async () => {
+    const payload = { anything: true };
+    const otherError = new Error("Something else went wrong");
+    fetchSpy.mockRejectedValueOnce(otherError);
+
+    await dbug(payload);
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `[dbug] An unexpected error occurred:`,
+      otherError,
+    );
   });
 });
