@@ -1,6 +1,6 @@
 {
   "name": "dbug-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "dbug desktop javascript agent",
   "repository": "dbugapp/dbug-js",
   "license": "MIT",
