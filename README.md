@@ -7,7 +7,7 @@
 
 <!-- /automd -->
 
-This is my package description.
+dbug desktop javascript agent
 
 ## Usage
 
