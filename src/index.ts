@@ -52,7 +52,7 @@ export function stringify(payload: unknown): string {
   }
 }
 
-export async function dbug(payload: unknown) {
+export default async function dbug(payload: unknown) {
   try {
     await fetch("http://127.0.0.1:53821/", {
       method: "POST",
