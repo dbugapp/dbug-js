@@ -52,31 +52,41 @@ export function stringify(payload: unknown): string {
   }
 }
 
-export default async function dbug(payload: unknown) {
-  try {
-    await fetch("http://127.0.0.1:53821/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: stringify(payload),
-      signal: AbortSignal.timeout(500),
-    });
-  } catch (error) {
-    if (
-      // Check for common connection error messages
-      (error instanceof TypeError &&
-        (String(error).includes("fetch") ||
-          String(error).includes("connect"))) ||
-      // Also check for timeout errors
-      (error instanceof DOMException && error.name === "AbortError")
-    ) {
-      console.error(
-        `[dbug] Failed to connect or timed out. Is the dbug desktop app running? Download: http://github.com/dbugapp\nOriginal error: ${error}`,
-      );
-    } else {
-      // Log other unexpected errors
-      console.error(`[dbug] An unexpected error occurred:`, error);
+let dbugEndpoint = "http://127.0.0.1:53821/";
+
+async function dbug(...payloads: unknown[]) {
+  for (const payload of payloads) {
+    try {
+      await fetch(dbugEndpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: stringify(payload),
+        signal: AbortSignal.timeout(500),
+      });
+    } catch (error) {
+      if (
+        // Check for common connection error messages
+        (error instanceof TypeError &&
+          (String(error).includes("fetch") ||
+            String(error).includes("connect"))) ||
+        // Also check for timeout errors
+        (error instanceof DOMException && error.name === "AbortError")
+      ) {
+        console.error(
+          `[dbug] Failed to connect or timed out. Is the dbug desktop app running? Download: http://github.com/dbugapp\nOriginal error: ${error}`,
+        );
+      } else {
+        // Log other unexpected errors
+        console.error(`[dbug] An unexpected error occurred:`, error);
+      }
     }
   }
 }
+
+dbug.endpoint = (url: string) => {
+  dbugEndpoint = url;
+};
+
+export default dbug;
