@@ -20,21 +20,25 @@ The official TypeScript/JavaScript agent for [dbug desktop](https://github.com/d
 ## Installation
 
 ### npm
+
 ```sh
 npm install dbug-js
 ```
 
 ### yarn
+
 ```sh
 yarn add dbug-js
 ```
 
 ### pnpm
+
 ```sh
 pnpm add dbug-js
 ```
 
 ### Auto-detect package manager
+
 ```sh
 npx nypm install dbug-js
 ```
@@ -52,30 +56,27 @@ npx nypm install dbug-js
 ### Basic Usage
 
 ```js
-import dbug from 'dbug-js';
+import dbug from "dbug-js";
 
 // Send single payload
-dbug({ message: 'Hello world', data: [1, 2, 3] });
+dbug({ message: "Hello world", data: [1, 2, 3] });
 
 // Send multiple payloads at once
-dbug(
-  { user: 'john', age: 30 },
-  ['item1', 'item2'],
-  'simple string',
-  { complex: { nested: { object: true } } }
-);
+dbug({ user: "john", age: 30 }, ["item1", "item2"], "simple string", {
+  complex: { nested: { object: true } },
+});
 ```
 
 ### Custom Endpoint
 
 ```js
-import dbug from 'dbug-js';
+import dbug from "dbug-js";
 
 // Set custom endpoint (optional - defaults to http://127.0.0.1:53821/)
-dbug.endpoint('http://localhost:3000/debug');
+dbug.endpoint("http://localhost:3000/debug");
 
 // Now all dbug calls will use the custom endpoint
-dbug({ message: 'Using custom endpoint' });
+dbug({ message: "Using custom endpoint" });
 ```
 
 ### Advanced Object Serialization
@@ -86,18 +87,18 @@ The library handles complex JavaScript objects that normally can't be JSON seria
 // Functions
 dbug({
   myFunction: function namedFunction() {
-    return 'Hello';
-  }
+    return "Hello";
+  },
 });
 
 // Circular references
-const obj = { name: 'test' };
+const obj = { name: "test" };
 obj.self = obj;
 dbug(obj); // Won't crash - circular refs are handled
 
 // Vue refs (if using Vue.js)
-import { ref } from 'vue';
-const myRef = ref('Hello Vue');
+import { ref } from "vue";
+const myRef = ref("Hello Vue");
 dbug(myRef); // Properly serializes Vue reactivity
 ```
 
